@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+    <!-- Replace the content tag with appropriate information -->
+    <meta name="description" content="RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control">
+    <meta property="og:title" content="RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control" />
+    <meta property="og:description" content="RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control" />
+
+    <!-- Keywords for your paper to be indexed by-->
+    <meta name="keywords" content="RealCam-I2V, Complex Camera Control, Image-to-Video Generation">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control</title>
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="static/css/bulma.min.css">
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+    <script defer src="static/js/fontawesome.all.min.js"></script>
+    <script src="static/js/bulma-carousel.min.js"></script>
+    <script src="static/js/bulma-slider.min.js"></script>
+    <script src="static/js/index.js"></script>
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']]
+            }
+        });
+    </script>
+
+    <style>
+        .video-container {
+            display: flex; /* Use flexbox to arrange videos side by side */
+            justify-content: center; /* Center the videos horizontally */
+            gap: 0px; /* Add space between videos */
+        }
+        .italic {
+            font-family: 'Playfair Display';
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- title and author -->
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column has-text-centered">
+                        <h1 class="title is-1 publication-title">
+                            RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control
+                        </h1>
+
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">*Under Review</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- abstract -->
+    <section class="section hero is-light">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3">Abstract</h2>
+                    <div class="content has-text-justified">
+                        <p>
+                            Recent advancements in camera-trajectory-guided image-to-video generation offer higher precision and better support for complex camera control compared to text-based approaches.
+                            However, they also introduce significant usability challenges, as users often struggle to provide precise camera parameters when working with arbitrary real-world images without knowledge of their depth nor scene scale.
+                            To address these real-world application issues, we propose RealCam-I2V, a novel diffusion-based video generation framework that integrates monocular metric depth estimation to establish 3D scene reconstruction in a preprocessing step.
+                            During training, the reconstructed 3D scene enables scaling camera parameters from relative to absolute values, ensuring compatibility and scale consistency across diverse real-world images.
+                            In inference, RealCam-I2V offers an intuitive interface where users can precisely draw camera trajectories by dragging within the 3D scene.
+                            To further enhance precise camera control and scene consistency, we propose scene-constrained noise shaping, which shapes high-level noise and also allows the framework to maintain dynamic, coherent video generation in lower noise stages.
+                            RealCam-I2V achieves significant improvements in controllability and video quality on the RealEstate10K and out-of-domain images. We further enables applications like camera-controlled looping video generation and generative frame interpolation.
+                            We will release our absolute-scale annotation, all training and evaluation codes, and all checkpoints including \(256 \times 256\), \(512 \times 320\), \(1024 \times 576\) for basic/interpolation/continuation mode.
+                            Only \(12\)GB and \(20\)GB is required for inference under \(512 \times 320\) and \(1024 \times 576\), respectively.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- 512x320 -->
+    <section class="section hero">
+
+        <!-- transition -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Transition & Loop</h2>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/demo/product_demo.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Product Demo
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/demo/chinese_landscape.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Chinese Landscape
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/various_types/cartoon.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Cartoon
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/various_types/landscape.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        LandScape
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/various_types/food.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Food
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/various_types/human.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Human
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/various_types/pets.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Pets
+                    </h2>
+                </div>
+
+            </div>
+
+            <br>
+
+            
+        </div>
+
+        <!-- transition -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Transition & Loop</h2>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/transition/1.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Vibrant Clouds &#8680; Snow Mountain
+                    </h2>
+                </div>
+
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/transition/2.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Dark Cave &#8680; Serene Ocean
+                    </h2>
+                </div>
+
+
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/transition/3.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Powdered Donut &#8680; Snow Mountain
+                    </h2>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="video-container">
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/transition/5.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Cotton Candy &#8680; Fluffy Clouds
+                    </h2>
+                </div>
+
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/transition/4.mov" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Vegetable Salad &#8680; Lush Rainforest
+                    </h2>
+                </div>
+
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/loop/1.mp4" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        SpongeBob SquarePants
+                    </h2>
+                </div>
+
+                <div>
+                    <video autoplay controls muted loop>
+                        <source src="static/videos/loop/2.mp4" type="video/mp4" />
+                    </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Wind Chimes
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- walk forward -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Walk Forward</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/walk forward/1.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/walk forward/2.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/walk forward/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- zoom-in -> zoom-out -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Zoom In & Zoom Out</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/zoom in -> zoom out/1.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/zoom in -> zoom out/2.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/zoom in -> zoom out/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- rotate anti-clockwise -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Rotate Anti-clockwise</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate anti-clockwise/1.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate anti-clockwise/2.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate anti-clockwise/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- rotate clockwise -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Rotate Clockwise</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate clockwise/1.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate clockwise/2.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/rotate clockwise/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- look left -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Look Left</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look left/1.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look left/2.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look left/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- look right -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Look Right</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look right/1.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look right/2.mp4" type="video/mp4" />
+                </video>
+                <video autoplay controls muted loop>
+                    <source src="static/videos/look right/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- pan left -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Pan Left</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan left/1.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan left/2.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan left/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- pan right -->
+        <div class="container has-text-centered">
+            <h2 class="title is-3">Pan Right</h2>
+
+            <div class="video-container">
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan right/1.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan right/2.mp4" type="video/mp4" />
+                </video>
+
+                <video autoplay controls muted loop>
+                    <source src="static/videos/pan right/3.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+    </section>
+
+
+    <br>
+
+    <!-- Method 1 -->
+    <div class="container has-text-centered">
+        <h2 class="title is-3">Method</h2>
+    </div>
+
+    <!-- step 1 -->
+    <div class="container has-text-centered">
+        <h2 class="title is-3">Step 1: Construct 3D Point Cloud By Monocular Metric Depth Estimation</h2>
+
+        <div class="video-container">
+            <div style="display: flex; justify-content: space-around; align-items: center;">
+                <img src="static/images/scene1.jpg" style="width: 30%;" alt="Image 1" />
+                <img src="static/images/scene2.jpg" style="width: 30%;" alt="Image 2" />
+                <img src="static/images/scene3.jpg" style="width: 30%;" alt="Image 3" />
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- step 2 -->
+    <section class="hero teaser">
+        <div class="container is-max-desktop">
+            <div class="hero-body">
+                    <h2 class="title is-3" style="text-align: center;">
+                        Step 2 (Only Required in Training)
+                        <br>
+                        Align From Relative-scale To Absolute-scale
+                    </h2>
+                <img src="static/images/align.jpg" style="width: 100%; display: block; margin: 0 auto; max-width: none;" />
+            </div>
+        </div>
+    </section>
+
+    <!-- step 3 -->
+    <div class="container has-text-centered">
+        <h2 class="title is-3" style="text-align: center;">
+            Step 3 (Inference)
+            <br>
+            Render Preview Video Along the Camera Trace on the Reconstructed 3D Scene
+        </h2>
+
+        <div class="video-container">
+            <video autoplay controls muted loop>
+                <source src="static/videos/preview_video/preview1.mp4" type="video/mp4" />
+            </video>
+
+            <video autoplay controls muted loop>
+                <source src="static/videos/preview_video/preview2.mp4" type="video/mp4" />
+            </video>
+
+            <video autoplay controls muted loop>
+                <source src="static/videos/preview_video/preview3.mp4" type="video/mp4" />
+            </video>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- step 4 -->
+    <div class="container has-text-centered">
+            <h2 class="title is-3">
+                Step 4 (Inference)
+                <br>
+                Scene-constrained Noise Shaping
+            </h2>
+        <div class="content has-text-justified">
+            We paste the visible latents of preview video into the predicted latent during generation process. However, we only paste on the high noise level and allow for
+            dynamics in lower level of noise, thus we name it "noise shaping" that only shapes the noise at the initial high noise stage.
+        </div>
+            <div class="video-container">
+                <div>
+            <video autoplay controls muted loop>
+                <source src="static/videos/ablation/ablation1_preview.mp4" type="video/mp4" />
+            </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Preview Video
+                    </h2>
+        </div>
+
+                <div>
+            <video autoplay controls muted loop>
+                <source src="static/videos/ablation/ablation1_withNoiseShaping.mp4" type="video/mp4" />
+            </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        Scene-Constrained Noise Shaping
+                    </h2>
+        </div>
+
+
+                <div>
+            <video autoplay controls muted loop>
+                <source src="static/videos/ablation/ablation1_withoutNoiseShaping.mp4" type="video/mp4" />
+            </video>
+                    <h2 class="subtitle has-text-centered italic">
+                        No Scene-Constrained Noise Shaping
+                    </h2>
+                </div>
+        </div>
+        <br>
+
+
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>
