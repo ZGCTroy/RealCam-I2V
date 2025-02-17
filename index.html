@@ -69,6 +69,39 @@
                             <span class="author-block">*Under Review</span>
                         </div>
 
+                        <div class="column has-text-centered">
+                            <div class="publication-links">
+                                <span class="link-block">
+                                    <a href="https://arxiv.org/pdf/2502.10059.pdf" target="_blank"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </span>
+                                        <span>Paper</span>
+                                    </a>
+                                </span>
+
+                                <span class="link-block">
+                                    <a href="https://github.com/ZGCTroy/RealCam-I2V" target="_blank"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fab fa-github"></i>
+                                        </span>
+                                        <span>Code</span>
+                                    </a>
+                                </span>
+
+                                <span class="link-block">
+                                    <a href="https://arxiv.org/abs/2502.10059" target="_blank"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="ai ai-arxiv"></i>
+                                        </span>
+                                        <span>arXiv</span>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,15 +116,14 @@
                     <h2 class="title is-3">Abstract</h2>
                     <div class="content has-text-justified">
                         <p>
-                            Recent advancements in camera-trajectory-guided image-to-video generation offer higher precision and better support for complex camera control compared to text-based approaches.
+                            Recent advancements in camera-trajectory-guided image-to-video generation offer higher precision and better support for complex camera control compared to text-based approaches. 
                             However, they also introduce significant usability challenges, as users often struggle to provide precise camera parameters when working with arbitrary real-world images without knowledge of their depth nor scene scale.
-                            To address these real-world application issues, we propose RealCam-I2V, a novel diffusion-based video generation framework that integrates monocular metric depth estimation to establish 3D scene reconstruction in a preprocessing step.
-                            During training, the reconstructed 3D scene enables scaling camera parameters from relative to absolute values, ensuring compatibility and scale consistency across diverse real-world images.
+                            To address these real-world application issues, we propose RealCam-I2V, a novel diffusion-based video generation framework that integrates monocular metric depth estimation to establish 3D scene reconstruction in a preprocessing step. 
+                            During training, the reconstructed 3D scene enables scaling camera parameters from relative to absolute values, ensuring compatibility and scale consistency across diverse real-world images. 
                             In inference, RealCam-I2V offers an intuitive interface where users can precisely draw camera trajectories by dragging within the 3D scene.
                             To further enhance precise camera control and scene consistency, we propose scene-constrained noise shaping, which shapes high-level noise and also allows the framework to maintain dynamic, coherent video generation in lower noise stages.
-                            RealCam-I2V achieves significant improvements in controllability and video quality on the RealEstate10K and out-of-domain images. We further enables applications like camera-controlled looping video generation and generative frame interpolation.
-                            We will release our absolute-scale annotation, all training and evaluation codes, and all checkpoints including \(256 \times 256\), \(512 \times 320\), \(1024 \times 576\) for basic/interpolation/continuation mode.
-                            Only \(12\)GB and \(20\)GB is required for inference under \(512 \times 320\) and \(1024 \times 576\), respectively.
+                            RealCam-I2V achieves significant improvements in controllability and video quality on the RealEstate10K and out-of-domain images. We further enables applications like camera-controlled looping video generation and generative frame interpolation. 
+                            We will release our absolute-scale annotation, codes, and all checkpoints.
                         </p>
                     </div>
                 </div>
