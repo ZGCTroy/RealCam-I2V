@@ -1,5 +1,10 @@
 # RealCam-I2V
 
+<div align="center">
+    <a href="https://zgctroy.github.io/RealCam-I2V"><img src="https://img.shields.io/static/v1?label=Project&message=Page&color=green"></a>
+    <a href="https://arxiv.org/abs/2502.10059"><img src="https://img.shields.io/static/v1?label=arXiv&message=2502.10059&color=b21d1a"></a>
+</div>
+
 Official repo of "RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control".
 
 ## Coming soon
