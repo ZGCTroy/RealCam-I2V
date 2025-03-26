@@ -12,10 +12,11 @@ Official repo of "RealCam-I2V: Real-World Image-to-Video Generation with Interac
 
 ## News
 
-- 2025/02/18: Initial commit of the project, we plan to release our DiT-based real-camera-controllable models (e.g., CogVideoX) and our dataset in several weeks.
+- 25/03/26: Release our dataset [RealCam-Vid](https://huggingface.co/datasets/MuteApo/RealCam-Vid) v1, for metric-scale camera-controlled video generation!
+- 25/02/18: Initial commit of the project, we plan to release our DiT-based real-camera-controllable models (e.g., CogVideoX) and our dataset in several weeks.
 
 :wink: Pay your kindly attention to:
-- Our dataset, uniquely combining diverse scene dynamics with absolute-scale camera trajectories, will be available at [RealCam-Vid](https://github.com/ZGCTroy/RealCam-Vid).
+- Our dataset, uniquely combining diverse scene dynamics with metric-scale camera trajectories, is available at [RealCam-Vid](https://github.com/ZGCTroy/RealCam-Vid).
 - Our previous work at [CamI2V](https://github.com/ZGCTroy/CamI2V).
 
 ## :spiral_notepad: Citation
