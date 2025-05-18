@@ -1,0 +1,25 @@
+{
+  "_class_name": "ControlnetXsVaeEncoderCogVideoX",
+  "_diffusers_version": "0.32.1",
+  "act_fn": "silu",
+  "block_out_channels": [
+    32,
+    64,
+    64,
+    128
+  ],
+  "down_block_types": [
+    "CogVideoXDownBlock3D",
+    "CogVideoXDownBlock3D",
+    "CogVideoXDownBlock3D",
+    "CogVideoXDownBlock3D"
+  ],
+  "in_channels": 6,
+  "latent_channels": 128,
+  "layers_per_block": 1,
+  "norm_eps": 1e-06,
+  "norm_num_groups": 8,
+  "sample_height": 480,
+  "sample_width": 720,
+  "temporal_compression_ratio": 4
+}
