@@ -100,7 +100,7 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
 
         components.scheduler = CogVideoXDPMScheduler.from_pretrained(model_path, subfolder="scheduler")
 
-        components.controlnetxs = ControlnetXs(model_path, components.transformer.config, predict_disparity=self.args.predict_disparity)
+        components.controlnetxs = ControlnetXs("models/camera_controller/CogVideoX1.5-5B-I2V", components.transformer.config)
         self.state.controlnetxs_transformer_config = components.controlnetxs.transformer.config
 
         return components
@@ -236,8 +236,7 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
     @override
     def collate_fn(self, samples: List[Dict[str, Any]]) -> Dict[str, Any]:
         ret = {
-            "encoded_videos": [], "prompt_embeddings": [], "images": [], "plucker_embeddings": [],
-            "prompts": [], "videos": [], "disparity_videos": [], "encoded_disparity_videos": []
+            "encoded_videos": [], "prompt_embeddings": [], "images": [], "plucker_embeddings": [], "prompts": [], "videos": []
         }
 
         for sample in samples:
@@ -247,12 +246,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
             plucker_embedding = sample["plucker_embedding"]
             video = sample["video"]
             prompt = sample["prompt"]
-
-            if self.args.predict_disparity:
-                disparity_video = sample["disparity_video"]
-                encoded_disparity_video = sample["encoded_disparity_video"]
-                ret["disparity_videos"].append(disparity_video)
-                ret["encoded_disparity_videos"].append(encoded_disparity_video)
 
             ret["encoded_videos"].append(encoded_video)
             ret["prompt_embeddings"].append(prompt_embedding)
@@ -268,9 +261,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
         if not self.args.precompute:
             ret["plucker_embeddings"] = torch.stack(ret["plucker_embeddings"])
         ret["videos"] = torch.stack(ret["videos"])
-        if self.args.predict_disparity:
-            ret["disparity_videos"] = torch.stack(ret["disparity_videos"])
-            ret["encoded_disparity_videos"] = torch.stack(ret["encoded_disparity_videos"])
 
         return ret
 
@@ -550,12 +540,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
         prompt = batch["prompts"]
         images = batch["images"]
         plucker_embedding = batch["plucker_embeddings"]  # B, C, F, H, W
-        if self.args.predict_disparity:
-            disparity_video = batch["disparity_videos"]
-            latent_disparity = batch["encoded_disparity_videos"]
-            self.state.disparity_video = disparity_video[0]
-        else:
-            latent_disparity = None
 
         self.state.image = images[0]  # C, H, W;  value in [0, 255]
         self.state.video = video[0]  # F, C, H, W; value in [-1, 1]
@@ -674,7 +658,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
             return_dict=True,
             plucker_embedding=plucker_embedding,  # B,F,C,H,W
             main_transformer=self.components.transformer,
-            latent_disparity = latent_disparity if self.args.predict_disparity else None,
             camera_condition_gft_beta = camera_condition_gft_beta,
             camera_condition_dropout=0.1 if self.args.enable_gft_training else 0.0
         )
@@ -692,7 +675,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
                     return_dict=True,
                     plucker_embedding=plucker_embedding,  # B,F,C,H,W
                     main_transformer=self.components.transformer,
-                    latent_disparity=latent_disparity if self.args.predict_disparity else None,
                     camera_condition_gft_beta=torch.ones_like(camera_condition_gft_beta),
                     camera_condition_dropout=1.0
                 )
@@ -714,12 +696,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
         loss_log = {
             'diffusion_loss': loss.detach(),
         }
-        if self.args.predict_disparity:
-            latent_disparity_pred = predicted_results['latent_disparity']
-            latent_disparity_loss = torch.mean(( (1+weights) * (latent_disparity - latent_disparity_pred) ** 2).reshape(batch_size, -1), dim=1)
-            loss = loss + latent_disparity_loss.mean()
-            loss_log['latent_disparity_loss'] = latent_disparity_loss.mean().detach()
-            self.state.latent_disparity_pred = latent_disparity_pred.detach()[0]
 
         return loss, loss_log
 
@@ -782,17 +758,6 @@ class CogVideoX1dot5I2VControlnetXsTrainer(Trainer):
             "conditioned_image": {"type": "image", "value": image},
             "gt_video": {"type": "video", "value": video},
         }
-
-        if self.args.predict_disparity:
-            disparity_video = self.state.disparity_video
-            disparity_video = ((disparity_video * 0.5 + 0.5) * 255).round().clamp(0, 255).to(torch.uint8)
-            disparity_video = [Image.fromarray(frame.permute(1, 2, 0).cpu().numpy()) for frame in disparity_video]
-            artifacts["gt_disparity_video"] = {"type": "video", "value": disparity_video}
-
-            latent_disparity_predict = self.state.latent_disparity_predict  # F//4, C, H//8, W//8
-            video_processor = VideoProcessor(vae_scale_factor=self.components.vae.config.vae_scale_factor_spatial)
-            pred_disparity_video = self.decode_video(latent_disparity_predict, video_processor)   # # F//4, C=16, H//8, W//8 --> C=3, F, H, W
-            artifacts["pred_disparity_video"] = {"type": "video", "value": pred_disparity_video}
 
         for i, (artifact_type, artifact_value) in enumerate(validation_artifacts):
             artifacts.update({f"generated_video_{i}": {"type": artifact_type, "value": artifact_value}})

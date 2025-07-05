@@ -6,15 +6,57 @@
     <a href="https://github.com/ZGCTroy/RealCam-Vid"><img src="https://img.shields.io/static/v1?label=Dataset&message=RealCam-Vid&color=blue"></a>
 </div>
 
-Official repo of "RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control".
-
-## Coming soon
+[ICCV'25] Official repo of "RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control".
 
 ## 🌟 News
 
-- 25/05/18: Release (almost all of) training code of RealCam-I2V on CogVideoX 1.5. We are still actively working on sanitizing the code. More updates of code and checkpoint will follow soon, please stay tuned!
-- 25/03/26: Release our dataset [RealCam-Vid](https://huggingface.co/datasets/MuteApo/RealCam-Vid) v1, for metric-scale camera-controlled video generation!
-- 25/02/18: Initial commit of the project, we plan to release our DiT-based real-camera-controllable models (e.g., CogVideoX) and our dataset in several weeks.
+- 25/07/05: Release inference code and checkpoints of RealCam-I2V. We are still actively working on sanitizing the code. More updates of code and checkpoint will follow soon, please stay tuned!
+- 25/06/26: RealCam-I2V is accepted by ICCV 2025! 🎉🎉
+- 25/05/18: Release training code of RealCam-I2V on CogVideoX 1.5.
+- 25/03/26: Release our dataset [RealCam-Vid](https://huggingface.co/datasets/MuteApo/RealCam-Vid) v1 for metric-scale camera-controlled video generation!
+- 25/02/18: Initial commit of the project, we plan to release our DiT-based real-camera i2v models (e.g., CogVideoX) in this repo.
+
+## ⚙️ Environment
+
+### Quick Start
+
+```shell
+apt install libgl1-mesa-glx libgl1-mesa-dri xvfb # for ubuntu
+yum install -y mesa-libGL mesa-dri-drivers Xvfb. # for centos
+conda install ffmpeg=7 -c conda-forge
+pip install -r requirements.txt
+```
+
+## 💫 Inference
+
+### Download Pretrained Models
+
+Download and put under `pretrained` folder the pretrained weights of [CogVideoX1.5-5B-I2V](https://huggingface.co/THUDM/CogVideoX1.5-5B-I2V), [Metric3D](https://huggingface.co/JUGGHM/Metric3D) and [Qwen2.5-VL](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct).
+
+### Download Model Checkpoints
+
+Download our weights of [RealCam-I2V](https://huggingface.co/MuteApo/RealCam-I2V) and put under `checkpoints` folder.
+Please edit `demo/models.json` if you have a custom model path.
+
+### Run Gradio Demo
+
+```shell
+python gradio_app.py
+```
+
+## 🚀 Training
+
+### Prepare Dataset
+
+Please access [RealCam-Vid](https://github.com/ZGCTroy/RealCam-Vid) and download our dataset for training RealCam-I2V-CogVideoX-1.5. Please unzip all contents in `data` folder.
+
+### Launch
+
+Edit example training script `accelerate_train.sh` if necessary and launch training by:
+
+```shell
+bash accelerate_train.sh
+```
 
 ## 🤗 Related Repo
 

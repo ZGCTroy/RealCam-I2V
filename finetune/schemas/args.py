@@ -13,8 +13,7 @@ class Args(BaseModel):
     model_path: Path
     model_name: str
     model_type: Literal["i2v", "t2v"]
-    training_type: Literal["lora", "sft", "controlnetxs"] = "lora"
-    predict_disparity: bool = False
+    training_type: Literal["lora", "sft", "controlnetxs"] = "controlnetxs"
     enable_gft_training: bool = False
     camera_condition_start_timestep: int = 0
     time_sampling_type: str = "default"
@@ -197,7 +196,6 @@ class Args(BaseModel):
         parser.add_argument("--report_to", type=str, required=True)
         parser.add_argument("--tracker_name", type=str)
         parser.add_argument("--sub_tracker_name", type=str)
-        parser.add_argument("--predict_disparity", action="store_true")
         parser.add_argument("--enable_align_factor", action="store_true")
         parser.add_argument("--enable_gft_training", action="store_true")
         parser.add_argument("--camera_condition_start_timestep", type=int, default=0)

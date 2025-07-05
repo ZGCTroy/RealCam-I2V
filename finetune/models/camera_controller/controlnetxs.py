@@ -92,9 +92,8 @@ class ControlnetXs(ModelMixin, ConfigMixin):
     @register_to_config
     def __init__(
             self,
-            model_path: str = "",
+            model_path: str,
             main_transformer_config=None,
-            predict_disparity=False,
     ):
         super().__init__()
         self.vae_encoder = ControlnetXsVaeEncoderCogVideoX.from_config(os.path.join(model_path, "controlnetxs_vae_encoder"))
@@ -103,11 +102,6 @@ class ControlnetXs(ModelMixin, ConfigMixin):
 
         inner_dim_for_transformer = self.transformer.config.num_attention_heads * self.transformer.config.attention_head_dim
         inner_dim_for_main_transformer = self.main_transformer_config.num_attention_heads * self.main_transformer_config.attention_head_dim
-
-        self.predict_disparity = predict_disparity
-        if self.predict_disparity:
-            self.norm_final_for_controlnetxs = nn.LayerNorm(inner_dim_for_transformer, self.transformer.config.norm_eps, self.transformer.config.norm_elementwise_affine)
-            self.proj_out_for_latent_disparity = nn.Linear(inner_dim_for_transformer, self.main_transformer_config.out_channels)
 
         self.up_down_layer_start_idx = self.transformer.config.up_down_layer_start_idx
         self.up_down_layer_end_idx = self.transformer.config.up_down_layer_end_idx
@@ -188,7 +182,6 @@ class ControlnetXs(ModelMixin, ConfigMixin):
             attention_kwargs: Optional[Dict[str, Any]] = None,
             return_dict: bool = True,
             main_transformer=None,
-            latent_disparity=None,
             camera_condition_gft_beta: Optional[Union[int, float, torch.LongTensor]] = None,  # Guidance-Free Training
             camera_condition_dropout=0.0
     ):
@@ -354,19 +347,5 @@ class ControlnetXs(ModelMixin, ConfigMixin):
 
         rets = {}
         rets['sample'] = output
-
-        if self.predict_disparity:
-            hidden_states_for_controlnetxs = self.norm_final_for_disparity(hidden_states_for_controlnetxs)
-            latent_disparity = self.proj_out_for_latent_disparity(hidden_states_for_controlnetxs)
-
-            if p_t is None:
-                latent_disparity = latent_disparity.reshape(batch_size, num_frames, height // p, width // p, -1, p, p)
-                latent_disparity = latent_disparity.permute(0, 1, 4, 2, 5, 3, 6).flatten(5, 6).flatten(3, 4)
-            else:
-                latent_disparity = latent_disparity.reshape(
-                    batch_size, (num_frames + p_t - 1) // p_t, height // p, width // p, -1, p_t, p, p
-                )
-                latent_disparity = latent_disparity.permute(0, 1, 5, 4, 2, 6, 3, 7).flatten(6, 7).flatten(4, 5).flatten(1, 2)
-            rets['latent_disparity'] = latent_disparity
 
         return rets

@@ -6,7 +6,7 @@ from accelerate.logging import get_logger
 
 from finetune.constants import LOG_LEVEL, LOG_NAME
 
-from ..utils.file_utils import delete_files, find_files
+from finetune.utils.file_utils import delete_files, find_files
 
 
 logger = get_logger(LOG_NAME, LOG_LEVEL)

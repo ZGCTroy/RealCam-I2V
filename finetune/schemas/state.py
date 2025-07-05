@@ -32,8 +32,6 @@ class State(BaseModel):
     prompt_embedding: torch.Tensor = None  # L, D
     prompt: str = None
     plucker_embedding: torch.Tensor = None  # F, 6, H, W
-    latent_disparity_pred: torch.Tensor = None  # C=16, F//4, H//8, W//8
-    disparity_video: torch.Tensor = None  # F, C=3, H, W; value in [-1, 1]
     timestep: torch.Tensor = None
 
     using_deepspeed: bool = False

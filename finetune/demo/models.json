@@ -1,0 +1,6 @@
+{
+    "cogvideox1.5_controlnetxs_realcam-i2v_50k": {
+        "pretrained_model_path": "pretrained/CogVideoX1.5-5B-I2V",
+        "controlnetxs_model_path": "checkpoints/RealCam-I2V_CogVideoX1.5-5B_50k.pt"
+    }
+}

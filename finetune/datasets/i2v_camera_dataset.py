@@ -54,9 +54,9 @@ class BaseI2VDataset(Dataset):
     def __init__(
             self,
             data_root: str,
+            cache_root: str,
             metadata_path: str,
             enable_align_factor: bool,
-            predict_disparity: bool = False,
             device: torch.device = torch.device("cpu"),
             trainer: "Trainer" = None,
             *args,
@@ -65,30 +65,22 @@ class BaseI2VDataset(Dataset):
         super().__init__()
 
         self.trainer = trainer
-        self.predict_disparity = predict_disparity
         self.data_root = data_root
+        self.cache_root = cache_root
         self.enable_align_factor = enable_align_factor
 
         self.train_resolution_str = "x".join(str(x) for x in self.trainer.args.train_resolution)
-        self.cache_dir = self.trainer.args.data_root / "cache"
-        self.video_latent_dir = self.cache_dir / "video_latent" / self.trainer.args.model_name / self.train_resolution_str
-        self.prompt_embeddings_dir = self.cache_dir / "prompt_embeddings"
+        self.video_latent_dir = cache_root / "video_latent" / self.trainer.args.model_name / self.train_resolution_str
+        self.prompt_embeddings_dir = cache_root / "prompt_embeddings"
         self.video_latent_dir.mkdir(parents=True, exist_ok=True)
         self.prompt_embeddings_dir.mkdir(parents=True, exist_ok=True)
 
         self.all_metadata = np.load(os.path.join(data_root, metadata_path), allow_pickle=True)["arr_0"].tolist()
-        self.all_metadata = list(filter(
-            lambda x: x['camera_extrinsics'].shape[0] > self.trainer.args.train_resolution[0], 
-            self.all_metadata,
-        ))
+        logger.info(f"Data Count (all): {len(self.all_metadata)}", main_process_only=True)
+
+        self.all_metadata = list(filter(lambda x: x['camera_extrinsics'].shape[0] > self.trainer.args.train_resolution[0], self.all_metadata))
         logger.info(f"Data Count (num_frames > {self.trainer.args.train_resolution[0]}): {len(self.all_metadata)}", main_process_only=True)
-        if self.trainer.args.precompute:
-            def check(x):
-                video_latent_path = self.video_latent_dir.joinpath(Path(x["video_path"]).stem + ".safetensors")
-                prompt_embeddings_path = self.prompt_embeddings_dir.joinpath(str(hashlib.sha256(x['long_caption'].encode()).hexdigest()) + ".safetensors")
-                return not video_latent_path.exists() or not prompt_embeddings_path.exists()
-            self.all_metadata = list(filter(check, self.all_metadata))
-        # self.all_metadata = list(self.all_metadata)
+
         logger.info(f"Data Count (final): {len(self.all_metadata)}", main_process_only=True)
 
         self.device = device
@@ -122,14 +114,7 @@ class BaseI2VDataset(Dataset):
             [0, fy, cy],
             [0, 0, 1]
         ])  # 3x3)  # [3, 3]
-        num_frames, *_ = camera_extrinsics.shape
-        align_factor = torch.full((num_frames, ), metadata['align_factor'] if self.enable_align_factor else 1.0)  # F,
-
-        if self.predict_disparity:
-            raise NotImplementedError("Predict disparity is not implemented yet")
-            # disparity_video_path = metadata['disparity_videos']
-        else:
-            disparity_video_path = None
+        align_factor = metadata['align_factor'] if self.enable_align_factor else 1.0
 
         prompt_hash = str(hashlib.sha256(prompt.encode()).hexdigest())
         prompt_embedding_path = self.prompt_embeddings_dir / (prompt_hash + ".safetensors")
@@ -157,15 +142,11 @@ class BaseI2VDataset(Dataset):
             image,
             camera_extrinsics,
             camera_intrinsics,
-            align_factor,
-            disparity_video,
         ) = self.preprocess(
             video_path,
             image,
             camera_extrinsics,
             camera_intrinsics,
-            align_factor,
-            disparity_video_path,
             self.trainer.args.use_precompute_video_latents,
         )
         H, W = frames.shape[-2:]
@@ -191,8 +172,8 @@ class BaseI2VDataset(Dataset):
             # plucker embedding
             cond_frame_index = torch.zeros(1, device=camera_extrinsics.device, dtype=torch.long)
             plucker_embedding, relative_c2w_RT_4x4 = get_camera_condition(  # B 6 F H W
-                camera_intrinsics.unsqueeze(0), camera_extrinsics.unsqueeze(0), cond_frame_index,
-                trace_scale_factor=1.0, per_frame_scale=align_factor.unsqueeze(0), H=H, W=W,
+                H, W, camera_intrinsics.unsqueeze(0), camera_extrinsics.unsqueeze(0), mode="w2c",
+                cond_frame_index=cond_frame_index, align_factor=align_factor
             )  # [B=1, C=6, F, H, W]
             plucker_embedding = plucker_embedding[0].contiguous()
         else:
@@ -211,9 +192,6 @@ class BaseI2VDataset(Dataset):
                 "width": encoded_video.shape[3],
             },
         }
-
-        if self.predict_disparity:
-            raise NotImplementedError("Predict disparity is not implemented yet")
 
         return ret
 
@@ -328,12 +306,7 @@ class I2VDatasetWithResize(BaseI2VDataset):
         return frames, resized_H, resized_W
 
     @override
-    def preprocess(self, video_path: Path | None, image_path: Path | None, camera_pose_4x4, camera_intrinsics, per_frame_scale, disparity_video_path=None, use_precompute_video_latents=True):
-        if disparity_video_path is not None:
-            disparity_video = preprocess_video_with_resize(disparity_video_path, self.max_num_frames, self.height, self.width, use_precompute_video_latents)
-        else:
-            disparity_video = None
-
+    def preprocess(self, video_path: Path | None, image_path: Path | None, camera_pose_4x4, camera_intrinsics, use_precompute_video_latents=True):
         if video_path is not None:
             video, indices = preprocess_video_with_resize(
                 video_path, self.max_num_frames, self.height, self.width,
@@ -346,7 +319,6 @@ class I2VDatasetWithResize(BaseI2VDataset):
                 resized_H, resized_W = video.shape[-2:]
 
             camera_pose_4x4 = camera_pose_4x4[indices]
-            per_frame_scale = per_frame_scale[indices]
             camera_intrinsics = camera_intrinsics.clone()
             cur_H, cur_W = video.shape[-2:]
             camera_intrinsics[0, 0] *= resized_W
@@ -365,7 +337,7 @@ class I2VDatasetWithResize(BaseI2VDataset):
         else:
             image = None
         
-        return video, image, camera_pose_4x4, camera_intrinsics, per_frame_scale, disparity_video
+        return video, image, camera_pose_4x4, camera_intrinsics
 
     @override
     def video_transform(self, frames: torch.Tensor) -> torch.Tensor:
