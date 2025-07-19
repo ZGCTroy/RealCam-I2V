@@ -158,10 +158,3 @@ cython_debug/
 *.pth
 *.ckpt
 *.pkl
-
-# sampled videos
-*.mp4
-*.avi
-*.gif
-*.png
-*.jpg
