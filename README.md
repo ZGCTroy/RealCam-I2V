@@ -10,11 +10,11 @@
 
 ## 🌟 News
 
-- 25/07/05: Release inference code and checkpoints of RealCam-I2V. We are still actively working on sanitizing the code. More updates of code and checkpoint will follow soon, please stay tuned!
+- 25/07/05: Release inference code and checkpoints of RealCam-I2V on CogVideoX 1.5 for exploration. The results we report in the [paper](https://arxiv.org/abs/2502.10059) are based on DynamiCrafter, for full reproduction and [evaluation](https://github.com/ZGCTroy/CamI2V/tree/main/evaluation), please refer to our previous repo [CamI2V](https://github.com/ZGCTroy/CamI2V).
 - 25/06/26: RealCam-I2V is accepted by ICCV 2025! 🎉🎉
 - 25/05/18: Release training code of RealCam-I2V on CogVideoX 1.5.
 - 25/03/26: Release our dataset [RealCam-Vid](https://huggingface.co/datasets/MuteApo/RealCam-Vid) v1 for metric-scale camera-controlled video generation!
-- 25/02/18: Initial commit of the project, we plan to release our DiT-based real-camera i2v models (e.g., CogVideoX) in this repo.
+- 25/02/18: Initial commit of the project, we plan to release our DiT-based real-camera I2V models (e.g., CogVideoX) in this repo.
 
 ## ⚙️ Environment
 
