@@ -27,7 +27,7 @@ MODEL_ARGS=(
     --training_type "controlnetxs"
     --time_sampling_type "truncated_normal"
     --time_sampling_mean 0.8
-    --time_sampling_type 0.075
+    --time_sampling_std 0.075
     --keep_aspect_ratio
 )
 
@@ -87,10 +87,10 @@ DATA_ARGS=(
 # distribution args for multi-node
 DIST_ARGS=(
     --config_file $ACCELERATE_CONFIG_FILE
-    --num_machines $HOST_NUM
-    --num_processes $NODE_NUM
-    --machine_rank $INDEX
-    --main_process_ip $CHIEF_IP
+    --num_machines 1
+    --num_processes 8
+    --machine_rank 0
+    --main_process_ip localhost
     --main_process_port 29500
 )
 
@@ -98,11 +98,11 @@ accelerate launch "${DIST_ARGS[@]}" train.py \
     "${MODEL_ARGS[@]}" \
     "${OUTPUT_ARGS[@]}" \
     "${DATA_ARGS[@]}" \
-    "${TRAIN_ARGS[@]}" \ 
+    "${TRAIN_ARGS[@]}" \
     "${SYSTEM_ARGS[@]}" \
     "${CHECKPOINT_ARGS[@]}" \
     "${VALIDATION_ARGS[@]}" \
-    --train_resolution "81x768x1360"  \
+    --train_resolution "81x768x1360" \
     --precompute
 
 # Optional for landscape/portrait joint training

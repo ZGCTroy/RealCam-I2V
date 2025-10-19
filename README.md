@@ -22,9 +22,13 @@
 
 ```shell
 apt install libgl1-mesa-glx libgl1-mesa-dri xvfb # for ubuntu
-yum install -y mesa-libGL mesa-dri-drivers Xvfb. # for centos
+yum install -y mesa-libGL mesa-dri-drivers Xvfb  # for centos
+
+conda create -n realcami2v python=3.12
+conda activate realcami2v
+
 conda install ffmpeg=7 -c conda-forge
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu126
 ```
 
 ## 💫 Inference
@@ -58,6 +62,8 @@ Edit example training script `accelerate_train.sh` if necessary and launch train
 bash accelerate_train.sh
 ```
 
+For CogVideoX 1.5, we precompute latents before training.
+
 ## 🤗 Related Repo
 
 - Our dataset, the first open-sourced, combining diverse scene dynamics with metric-scale camera trajectories, is available at [RealCam-Vid](https://github.com/ZGCTroy/RealCam-Vid).
@@ -71,6 +77,13 @@ bash accelerate_train.sh
     title={RealCam-I2V: Real-World Image-to-Video Generation with Interactive Complex Camera Control}, 
     author={Li, Teng and Zheng, Guangcong and Jiang, Rui and Zhan, Shuigen and Wu, Tao and Lu, Yehao and Lin, Yining and Li, Xi},
     journal={arXiv preprint arXiv:2502.10059},
+    year={2025},
+}
+
+@article{zheng2025realcam,
+    title={RealCam-Vid: High-resolution Video Dataset with Dynamic Scenes and Metric-scale Camera Movements}, 
+    author={Zheng, Guangcong and Li, Teng and Zhou, Xianpan and Li, Xi},
+    journal={arXiv preprint arXiv:2504.08212},
     year={2025},
 }
 

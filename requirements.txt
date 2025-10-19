@@ -2,9 +2,9 @@ diffusers
 accelerate<1.8
 transformers
 numpy<2
-torch==2.6
-torchvision
-torchcodec==0.0.2
+torch==2.6.0
+torchvision==0.21.0
+torchcodec==0.2
 sentencepiece
 gradio
 imageio
@@ -30,4 +30,4 @@ html4vision
 plyfile
 open3d
 pyvirtualdisplay
-qwen_vl_utls[decord]
+qwen_vl_utils[decord]

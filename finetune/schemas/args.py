@@ -2,7 +2,6 @@ import argparse
 import datetime
 import logging
 from pathlib import Path
-from pprint import pprint
 from typing import Any, List, Literal, Tuple
 
 from pydantic import BaseModel, ValidationInfo, field_validator
@@ -30,6 +29,7 @@ class Args(BaseModel):
     ########## Data ###########
     precompute: bool = False
     data_root: Path
+    cache_root: Path
     metadata_path: Path
     enable_align_factor: bool = False
     allow_switch_hw: bool = False
@@ -191,6 +191,7 @@ class Args(BaseModel):
         parser.add_argument("--training_type", type=str, required=True)
         parser.add_argument("--output_dir", type=str, required=True)
         parser.add_argument("--data_root", type=str, required=True)
+        parser.add_argument("--cache_root", type=str, required=True)
         parser.add_argument("--metadata_path", type=str, required=True)
         parser.add_argument("--train_resolution", type=str, required=True)
         parser.add_argument("--report_to", type=str, required=True)
@@ -271,6 +272,5 @@ class Args(BaseModel):
         # Convert video_resolution_buckets string to list of tuples
         frames, height, width = args.train_resolution.split("x")
         args.train_resolution = (int(frames), int(height), int(width))
-        pprint(args.__dict__)
 
         return cls(**vars(args))
